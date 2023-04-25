@@ -64,16 +64,17 @@ function App() {
   };
   return (
     <div className="App">
-      <button
-        onClick={() => {
-          onBtnClick();
-        }}
-      >
-        Check
-      </button>
-      <div className="container">
+      <div className="container my-5">
+        <button
+          className="btn btn-outline-success"
+          onClick={() => {
+            onBtnClick();
+          }}
+        >
+          View Document
+        </button>
         <div className="row justify-content-center">
-          <div className="col-5">
+          <div className="col-7 mt-5">
             <img src={ObjUrl} alt="" className="img-fluid" />
           </div>
         </div>
