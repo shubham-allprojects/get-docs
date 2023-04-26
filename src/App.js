@@ -2,7 +2,6 @@ import "./App.css";
 import axios from "axios";
 import { useState } from "react";
 import { useEffect } from "react";
-import "bootstrap-icons/font/bootstrap-icons.css";
 import { pdfData, imageData } from "./Data";
 let cnt = 0;
 function App() {
