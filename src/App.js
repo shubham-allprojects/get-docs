@@ -1,11 +1,11 @@
 import "./App.css";
-import axios from "axios";
+// import axios from "axios";
 import { useState } from "react";
 import { useEffect } from "react";
 import { pdfData, imageData } from "./Data";
-let cnt = 0;
+// let cnt = 0;
 function App() {
-  let s1 = "";
+  // let s1 = "";
   // const getChunksOfDocuments = async () => {
   //   let dataToPost = {
   //     document_id: 1,
@@ -62,6 +62,7 @@ function App() {
     setObjUrl(URL.createObjectURL(blob));
     // window.open(URL.createObjectURL(blob));
   };
+
   return (
     <div className="App">
       <div className="container my-5">
@@ -105,17 +106,26 @@ function App() {
                 ></button>
               </div>
               <div className="modal-body" style={{ height: "600px" }}>
-                {typeOfFile === "image" ? (
-                  <img src={ObjUrl} alt="" className="h-100 w-100" />
-                ) : typeOfFile === "pdf" ? (
-                  <iframe
-                    className="h-100 w-100"
-                    src={ObjUrl}
-                    frameborder="0"
-                  ></iframe>
-                ) : (
-                  <></>
-                )}
+                <div className="container position-relative">
+                  <div className="row justify-content-center">
+                    <div className="col-md-10">
+                      {typeOfFile === "image" ? (
+                        <img src={ObjUrl} alt="" className="h-100 w-100" />
+                      ) : typeOfFile === "pdf" ? (
+                        <iframe
+                          title="pdf-docs"
+                          style={{ height: "500px" }}
+                          className="w-100"
+                          type="application/pdf"
+                          src={ObjUrl}
+                          frameBorder="0"
+                        ></iframe>
+                      ) : (
+                        <></>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
