@@ -112,14 +112,16 @@ function App() {
                       {typeOfFile === "image" ? (
                         <img src={ObjUrl} alt="" className="h-100 w-100" />
                       ) : typeOfFile === "pdf" ? (
-                        <iframe
-                          title="pdf-docs"
-                          style={{ height: "500px" }}
-                          className="w-100"
-                          type="application/pdf"
-                          src={ObjUrl}
-                          frameBorder="0"
-                        ></iframe>
+                        <>
+                          <iframe
+                            title="pdf-docs"
+                            style={{ height: "500px" }}
+                            className="w-100"
+                            type="application/pdf"
+                            src={ObjUrl}
+                            frameBorder="0"
+                          ></iframe>
+                        </>
                       ) : (
                         <></>
                       )}
