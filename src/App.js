@@ -1,42 +1,59 @@
 import "./App.css";
-// import axios from "axios";
-import { useState } from "react";
-import { useEffect } from "react";
+import axios from "axios";
+import { useState, useEffect } from "react";
 import { pdfData, imageData } from "./Data";
-// let cnt = 0;
+let cnt = 0;
 function App() {
-  // let s1 = "";
-  // const getChunksOfDocuments = async () => {
-  //   let dataToPost = {
-  //     document_id: 1,
-  //     property_id: 1,
-  //     chunk_number: cnt,
-  //     chunk_size: 500000,
-  //   };
-  //   await axios
-  //     .post(`/sam/v1/property/auth/property-docs`, dataToPost, {
-  //       headers: {
-  //         Authorization:
-  //           "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJlbWFpbCI6ImFkbWluQHNhbXRvb2wuY29tIiwiZXhwIjoxNjgyNDI5NzU0LCJyb2xlIjoiQWRtaW4sIiwidXNlcmlkIjoxfQ.-6McOnY-8U6i3kgcp1OfjURb8r9z830WNkAS37DsMlA",
-  //       },
-  //     })
-  //     .then((res) => {
-  //       if (res.data.data !== "") {
-  //         if (cnt === 0) {
-  //           setFileName(res.data.file_name.split(".")[0]);
-  //           setFileExtension(res.data.file_name.split(".")[1]);
-  //         }
+  let s1 = "";
+  const [fileName, setFileName] = useState();
+  const [fileExtension, setFileExtension] = useState();
+  const getChunksOfDocuments = async () => {
+    let dataToPost = {
+      document_id: 1,
+      property_id: 1,
+      chunk_number: cnt,
+      chunk_size: 230,
+    };
+    await axios
+      .post(`/sam/v1/property/auth/property-docs`, dataToPost, {
+        headers: {
+          Authorization:
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJlbWFpbCI6ImFkbWluQHNhbXRvb2wuY29tIiwiZXhwIjoxNjgyNTk3NTIyLCJyb2xlIjoiQWRtaW4sIiwidXNlcmlkIjoxfQ.I7rSD28bG29N6FtoIFs0XzkDwLI56KAWViJg-n5SRSo",
+        },
+      })
+      .then((res) => {
+        // if (res.data.last_chunk !== true) {
+        //   console.log(res.data);
+        //   if (cnt === 0) {
+        //     setFileName(res.data.file_name.split(".")[0]);
+        //     setFileExtension(res.data.file_name.split(".")[1]);
+        //   }
 
-  //         cnt += 1;
-  //         if (s1 !== res.data.data) {
-  //           s1 += res.data.data;
-  //         }
-  //         getChunksOfDocuments();
-  //       }
-  //     });
-  // };
+        //   cnt += 1;
+        //   if (s1 !== res.data.data) {
+        //     s1 += res.data.data;
+        //   }
+        //   getChunksOfDocuments();
+        // }
+        let totalChunks;
+        if (s1 !== res.data.data) {
+          s1 += res.data.data;
+        }
+
+        if (res.data.last_chunk !== true) {
+          totalChunks = Math.ceil(
+            res.data.total_file_size / res.data.chunk_size
+          );
+          console.log(totalChunks);
+          cnt += 1;
+          if (cnt <= totalChunks - 1) {
+            getChunksOfDocuments();
+          }
+        }
+      });
+  };
   useEffect(() => {
-    // getChunksOfDocuments();
+    getChunksOfDocuments();
     // eslint-disable-next-line
   }, []);
 
@@ -66,6 +83,14 @@ function App() {
   return (
     <div className="App">
       <div className="container my-5">
+        <button
+          onClick={() => {
+            console.log(s1);
+          }}
+          className="mx-2 btn btn-primary"
+        >
+          see combined chunk data
+        </button>
         <button
           data-bs-toggle="modal"
           data-bs-target="#exampleModal"
