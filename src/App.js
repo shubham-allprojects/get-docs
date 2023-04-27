@@ -22,19 +22,6 @@ function App() {
         },
       })
       .then((res) => {
-        // if (res.data.last_chunk !== true) {
-        //   console.log(res.data);
-        //   if (cnt === 0) {
-        //     setFileName(res.data.file_name.split(".")[0]);
-        //     setFileExtension(res.data.file_name.split(".")[1]);
-        //   }
-
-        //   cnt += 1;
-        //   if (s1 !== res.data.data) {
-        //     s1 += res.data.data;
-        //   }
-        //   getChunksOfDocuments();
-        // }
         let totalChunks;
         if (s1 !== res.data.data) {
           s1 += res.data.data;
