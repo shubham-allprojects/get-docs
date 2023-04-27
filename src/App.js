@@ -27,6 +27,11 @@ function App() {
           s1 += res.data.data;
         }
 
+        //   if (cnt === 0) {
+        //     setFileName(res.data.file_name.split(".")[0]);
+        //     setFileExtension(res.data.file_name.split(".")[1]);
+        //   }
+
         if (res.data.last_chunk !== true) {
           totalChunks = Math.ceil(
             res.data.total_file_size / res.data.chunk_size
