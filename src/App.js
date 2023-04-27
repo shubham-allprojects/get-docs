@@ -12,13 +12,12 @@ function App() {
       document_id: 1,
       property_id: 1,
       chunk_number: cnt,
-      chunk_size: 230,
+      chunk_size:500,
     };
     await axios
       .post(`/sam/v1/property/auth/property-docs`, dataToPost, {
         headers: {
-          Authorization:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJlbWFpbCI6ImFkbWluQHNhbXRvb2wuY29tIiwiZXhwIjoxNjgyNTk3NTIyLCJyb2xlIjoiQWRtaW4sIiwidXNlcmlkIjoxfQ.I7rSD28bG29N6FtoIFs0XzkDwLI56KAWViJg-n5SRSo",
+          Authorization: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJlbWFpbCI6ImFkbWluQHNhbXRvb2wuY29tIiwiZXhwIjoxNjgyNjA2MzE1LCJyb2xlIjoiQWRtaW4sIiwidXNlcmlkIjoxfQ.82R4c3cgNDnFNVNPG_9sMv0uarjoHW1ST2qE1LsKPzw",
         },
       })
       .then((res) => {
