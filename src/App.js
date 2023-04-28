@@ -47,6 +47,9 @@ const App = () => {
   useEffect(() => {
     const pdfData = pdfjsLib.getDocument("sample.pdf");
     pdfData._capability.promise.then((pdf) => {
+      if (myState.pdf) {
+        myState.pdf.destroy();
+      }
       myState.pdf = pdf;
       render();
     });
@@ -86,7 +89,7 @@ const App = () => {
                     value="1"
                     type="number"
                     onChange={() => {
-                      console.log("");
+                      // console.log("");
                     }}
                   />
                 </span>
