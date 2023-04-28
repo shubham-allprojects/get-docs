@@ -1,22 +1,21 @@
-import React, { useState, useEffect } from "react";
-import pdfjsLib from "pdfjs-dist/build/pdf";
+import React, { useEffect } from "react";
+// import pdfjsLib from "pdfjs-dist/build/pdf";
+import * as pdfjsLib from "pdfjs-dist/webpack";
+// import * as pdfjsLib from "pdfjs-dist/build/pdf";
 // import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
 
 const App = () => {
-  const [myState, setMyState] = useState({
+  const myState = {
     pdf: null,
     currentPage: 1,
     zoom: 1,
-  });
-
-  const { pdf, currentPage, zoom } = myState;
+  };
 
   const render = () => {
-    pdf.getPage(currentPage).then((page) => {
+    myState.pdf.getPage(myState.currentPage).then((page) => {
       var canvas = document.getElementById("pdf_renderer");
       var ctx = canvas.getContext("2d");
-
-      var viewport = page.getViewport(zoom);
+      var viewport = page.getViewport(myState.zoom);
       canvas.width = viewport.width;
       canvas.height = viewport.height;
 
@@ -28,24 +27,27 @@ const App = () => {
   };
 
   const onPrevBtnClick = (e) => {
-    if (pdf == null || currentPage == 1) return;
-    // myState.currentPage -= 1;
-    setMyState({ ...myState, currentPage: currentPage - 1 });
-    document.getElementById("current_page").value = currentPage - 1;
+    if (myState.pdf === null || myState.currentPage === 1) return;
+    myState.currentPage -= 1;
+    document.getElementById("current_page").value = myState.currentPage;
     render();
   };
 
   const onNextBtnClick = (e) => {
-    if (pdf == null || currentPage > pdf._pdfInfo.numPages) return;
-    // myState.currentPage += 1;
-    setMyState({ ...myState, currentPage: currentPage + 1 });
-    document.getElementById("current_page").value = currentPage + 1;
+    if (
+      myState.pdf === null ||
+      myState.currentPage > myState.pdf._pdfInfo.numPages
+    )
+      return;
+    myState.currentPage += 1;
+    document.getElementById("current_page").value = myState.currentPage;
     render();
   };
 
   useEffect(() => {
-    pdfjsLib.getDocument("sample.pdf").then((pdf) => {
-      setMyState({ ...myState, pdf: pdf });
+    const pdfData = pdfjsLib.getDocument("sample.pdf");
+    pdfData._capability.promise.then((pdf) => {
+      myState.pdf = pdf;
       render();
     });
   }, []);
