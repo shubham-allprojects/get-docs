@@ -1,127 +1,40 @@
-import React, { useEffect } from "react";
-import * as pdfjsLib from "pdfjs-dist/webpack";
+// pages/index.js
+import React, { useEffect, useRef, useState } from "react";
 
-const App = () => {
-  const myState = {
-    pdf: null,
-    currentPage: 1,
-    zoom: 1,
-  };
-
-  const render = () => {
-    myState.pdf.getPage(myState.currentPage).then((page) => {
-      var canvas = document.getElementById("pdf_renderer");
-      var ctx = canvas.getContext("2d");
-      var viewport = page.getViewport(myState.zoom);
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-
-      page.render({
-        canvasContext: ctx,
-        viewport: viewport,
-      });
-    });
-  };
-
-  const onPrevBtnClick = (e) => {
-    if (myState.pdf === null || myState.currentPage === 1) return;
-    myState.currentPage -= 1;
-    document.getElementById("current_page").value = myState.currentPage;
-    render();
-  };
-
-  const onNextBtnClick = (e) => {
-    if (
-      myState.pdf === null ||
-      myState.currentPage >= myState.pdf._pdfInfo.numPages
-    )
-      return;
-    myState.currentPage += 1;
-    document.getElementById("current_page").value = myState.currentPage;
-    render();
-  };
+export default function App() {
+  const [maxPages, setMaxPages] = useState();
 
   useEffect(() => {
-    const pdfData = pdfjsLib.getDocument("sample.pdf");
-    pdfData._capability.promise.then((pdf) => {
-      if (myState.pdf) {
-        console.log(myState.pdf);
-        myState.pdf.destroy();
+    (async function () {
+      // We import this here so that it's only loaded during client-side rendering.
+      const pdfJS = await import("pdfjs-dist/build/pdf");
+      pdfJS.GlobalWorkerOptions.workerSrc =
+        window.location.origin + "/pdf.worker.min.js";
+      const pdf = await pdfJS.getDocument("sample.pdf").promise;
+      setMaxPages(pdf._pdfInfo.numPages);
+      const page = await pdf.getPage(1);
+      const viewport = page.getViewport({ scale: 1.5 });
+      const canvasSample = document.createElement("canvas");
+      let mainDiv = document.getElementById("sample");
+      if (mainDiv.firstChild) {
+        mainDiv.removeChild(mainDiv.firstChild);
       }
-      myState.pdf = pdf;
-      render();
-    });
+      mainDiv.appendChild(canvasSample);
+      // Prepare canvas using PDF page dimensions.
+      const canvas = canvasSample;
+      const canvasContext = canvas.getContext("2d");
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+
+      // Render PDF page into canvas context.
+      const renderContext = { canvasContext, viewport };
+      page.render(renderContext);
+    })();
   }, []);
 
   return (
-    <div className="container my-5">
-      <div className="row justify-content-center">
-        <div className="col-xl-10 border border-2 border-info p-5">
-          <h1 className="fw-bold text-primary text-center">Pdf Viewer</h1>
-          <hr />
-          <div id="my_pdf_viewer" className="container-fluid">
-            <div className="row">
-              <div id="canvas_container" className="col-12">
-                <canvas id="pdf_renderer"></canvas>
-              </div>
-            </div>
-
-            <div
-              id="navigation_controls"
-              className="row justify-content-center mt-3"
-            >
-              <div className="col-xl-12 d-flex">
-                <span>
-                  <button
-                    onClick={onPrevBtnClick}
-                    className="btn btn-warning"
-                    id="go_previous"
-                  >
-                    Previous
-                  </button>
-                </span>
-                <span>
-                  <input
-                    className="form-control"
-                    id="current_page"
-                    defaultValue="1"
-                    min={1}
-                    type="number"
-                  />
-                </span>
-                <span>
-                  <button
-                    onClick={onNextBtnClick}
-                    className="btn btn-warning"
-                    id="go_next"
-                  >
-                    Next
-                  </button>
-                </span>
-              </div>
-            </div>
-            <div id="zoom_controls" className="row justify-content-center mt-3">
-              <div className="col-12 d-flex">
-                <span>
-                  <button className="btn btn-outline-primary" id="zoom_in">
-                    +
-                  </button>
-                </span>
-                <span>
-                  <button
-                    className="btn btn-outline-primary ms-2"
-                    id="zoom_out"
-                  >
-                    -
-                  </button>
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div id="sample">
+      {/* <canvas ref={canvasRef} style={{ height: "100vh" }} /> */}
     </div>
   );
-};
-
-export default App;
+}
