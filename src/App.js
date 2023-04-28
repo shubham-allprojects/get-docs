@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
-// import pdfjsLib from "pdfjs-dist/build/pdf";
 import * as pdfjsLib from "pdfjs-dist/webpack";
-// import * as pdfjsLib from "pdfjs-dist/build/pdf";
-// import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
+
 
 const App = () => {
   const myState = {
@@ -36,7 +34,7 @@ const App = () => {
   const onNextBtnClick = (e) => {
     if (
       myState.pdf === null ||
-      myState.currentPage > myState.pdf._pdfInfo.numPages
+      myState.currentPage >= myState.pdf._pdfInfo.numPages
     )
       return;
     myState.currentPage += 1;
@@ -48,6 +46,7 @@ const App = () => {
     const pdfData = pdfjsLib.getDocument("sample.pdf");
     pdfData._capability.promise.then((pdf) => {
       if (myState.pdf) {
+        console.log(myState.pdf);
         myState.pdf.destroy();
       }
       myState.pdf = pdf;
