@@ -1,70 +1,158 @@
-# Getting Started with Create React App
+import "./App.css";
+import axios from "axios";
+import { useState, useEffect } from "react";
+import { pdfData, imageData } from "./Data";
+let cnt = 0;
+function App() {
+  let s1 = "";
+  const [fileName, setFileName] = useState();
+  const [fileExtension, setFileExtension] = useState();
+  const getChunksOfDocuments = async () => {
+    let dataToPost = {
+      document_id: 1,
+      property_id: 1,
+      chunk_number: cnt,
+      chunk_size: 500,
+    };
+    await axios
+      .post(`/sam/v1/property/auth/property-docs`, dataToPost, {
+        headers: {
+          Authorization:
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJlbWFpbCI6ImFkbWluQHNhbXRvb2wuY29tIiwiZXhwIjoxNjgyNjA2MzE1LCJyb2xlIjoiQWRtaW4sIiwidXNlcmlkIjoxfQ.82R4c3cgNDnFNVNPG_9sMv0uarjoHW1ST2qE1LsKPzw",
+        },
+      })
+      .then((res) => {
+        let totalChunks;
+        if (s1 !== res.data.data) {
+          s1 += res.data.data;
+        }
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+        //   if (cnt === 0) {
+        //     setFileName(res.data.file_name.split(".")[0]);
+        //     setFileExtension(res.data.file_name.split(".")[1]);
+        //   }
 
-## Available Scripts
+        if (res.data.last_chunk !== true) {
+          totalChunks = Math.ceil(
+            res.data.total_file_size / res.data.chunk_size
+          );
+          console.log(totalChunks);
+          cnt += 1;
+          if (cnt <= totalChunks - 1) {
+            getChunksOfDocuments();
+          }
+        }
+      });
+  };
+  useEffect(() => {
+    getChunksOfDocuments();
+    // eslint-disable-next-line
+  }, []);
 
-In the project directory, you can run:
+  const [ObjUrl, setObjUrl] = useState("");
+  const [typeOfFile, setTypeOfFile] = useState("");
+  const onBtnClick = async (base64DataFromDB, fileExtension) => {
+    let dataString = "";
+    if (fileExtension === "pdf") {
+      setTypeOfFile("pdf");
+      dataString = "data:application/pdf;base64,";
+    } else if (
+      fileExtension === "jpg" ||
+      fileExtension === "jpeg" ||
+      fileExtension === "png"
+    ) {
+      setTypeOfFile("image");
+      dataString = `data:image/${fileExtension};base64,`;
+    }
+    const base64Data = base64DataFromDB;
+    const base64Response = await fetch(`${dataString}${base64Data}`);
+    const blob = await base64Response.blob();
+    console.log(blob);
+    setObjUrl(URL.createObjectURL(blob));
+    // window.open(URL.createObjectURL(blob));
+  };
 
-### `npm start`
+  return (
+    <div className="App">
+      <div className="container my-5">
+        <button
+          onClick={() => {
+            console.log(s1);
+          }}
+          className="mx-2 btn btn-primary"
+        >
+          see combined chunk data
+        </button>
+        <button
+          data-bs-toggle="modal"
+          data-bs-target="#exampleModal"
+          className="btn btn-outline-success"
+          onClick={() => {
+            onBtnClick(pdfData, "pdf");
+          }}
+        >
+          View PDF
+        </button>
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+        <button
+          data-bs-toggle="modal"
+          data-bs-target="#exampleModal"
+          className="btn btn-outline-success ms-2"
+          onClick={() => {
+            onBtnClick(imageData, "png");
+          }}
+        >
+          View Image
+        </button>
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+        <div
+          className="modal fade"
+          id="exampleModal"
+          tabIndex="-1"
+          aria-labelledby="exampleModalLabel"
+          aria-hidden="true"
+        >
+          <div className="modal-dialog modal-xl">
+            <div className="modal-content">
+              <div className="modal-header">
+                <button
+                  type="button"
+                  className="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div className="modal-body" style={{ height: "600px" }}>
+                <div className="container position-relative">
+                  <div className="row justify-content-center">
+                    <div className="col-md-10">
+                      {typeOfFile === "image" ? (
+                        <img src={ObjUrl} alt="" className="h-100 w-100" />
+                      ) : typeOfFile === "pdf" ? (
+                        <>
+                          <iframe
+                            title="pdf-docs"
+                            style={{ height: "500px" }}
+                            className="w-100"
+                            type="application/pdf"
+                            src={ObjUrl}
+                            frameBorder="0"
+                          ></iframe>
+                        </>
+                      ) : (
+                        <></>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <br />
+    </div>
+  );
+}
 
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+export default App;
