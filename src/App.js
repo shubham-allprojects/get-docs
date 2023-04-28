@@ -5,8 +5,8 @@ import { pdfData, imageData } from "./Data";
 let cnt = 0;
 function App() {
   let s1 = "";
-  const [fileName, setFileName] = useState();
-  const [fileExtension, setFileExtension] = useState();
+  // const [fileName, setFileName] = useState();
+  // const [fileExtension, setFileExtension] = useState();
   const getChunksOfDocuments = async () => {
     let dataToPost = {
       document_id: 1,
@@ -69,7 +69,9 @@ function App() {
     const blob = await base64Response.blob();
     console.log(blob);
     setObjUrl(URL.createObjectURL(blob));
-    window.open(URL.createObjectURL(blob));
+    if (fileExtension === "pdf") {
+      window.open(URL.createObjectURL(blob));
+    }
   };
 
   return (
@@ -120,10 +122,10 @@ function App() {
                   aria-label="Close"
                 ></button>
               </div>
-              <div className="modal-body" style={{ height: "600px" }}>
+              <div className="modal-body documents-modal-body">
                 <div className="container position-relative">
                   <div className="row justify-content-center">
-                    <div className="col-md-10">
+                    <div className="col-12 px-0">
                       {typeOfFile === "image" ? (
                         <img src={ObjUrl} alt="" className="h-100 w-100" />
                       ) : typeOfFile === "pdf" ? (
