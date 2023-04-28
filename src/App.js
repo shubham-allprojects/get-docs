@@ -49,10 +49,7 @@ export default function App() {
 
   return (
     <>
-      <div id="sample">
-        {/* <canvas ref={canvasRef} style={{ height: "100vh" }} /> */}
-      </div>
-      <div>
+          <div>
         <button className="btn btn-primary" onClick={onPrevClick}>
           Prev
         </button>
@@ -61,6 +58,10 @@ export default function App() {
           Next
         </button>
       </div>
+      <div id="sample">
+        {/* <canvas ref={canvasRef} style={{ height: "100vh" }} /> */}
+      </div>
+
     </>
   );
 }
