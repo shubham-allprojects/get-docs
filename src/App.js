@@ -74,36 +74,80 @@ function App() {
     }
   };
 
+  const onDownloadBtnClick = async (base64DataFromDB, fileExtension) => {
+    let dataString = "";
+    if (fileExtension === "pdf") {
+      setTypeOfFile("pdf");
+      dataString = "data:application/pdf;base64,";
+    } else if (
+      fileExtension === "jpg" ||
+      fileExtension === "jpeg" ||
+      fileExtension === "png"
+    ) {
+      setTypeOfFile("image");
+      dataString = `data:image/${fileExtension};base64,`;
+    }
+    const base64Data = base64DataFromDB;
+    const base64Response = await fetch(`${dataString}${base64Data}`);
+    const blob = await base64Response.blob();
+    let href = URL.createObjectURL(blob);
+    const a = Object.assign(document.createElement("a"), {
+      href,
+      style: "display:none",
+      download: `sample.${fileExtension}`,
+    });
+    document.body.appendChild(a);
+    a.click();
+    URL.revokeObjectURL(href);
+    a.remove();
+  };
   return (
     <div className="App">
       <div className="container my-5">
-        <button
-          onClick={() => {
-            console.log(s1);
-          }}
-          className="mx-2 btn btn-primary"
-        >
-          see combined chunk data
-        </button>
-        <button
-          className="btn btn-outline-success"
-          onClick={() => {
-            onBtnClick(pdfData, "pdf");
-          }}
-        >
-          View PDF
-        </button>
-
-        <button
-          data-bs-toggle="modal"
-          data-bs-target="#exampleModal"
-          className="btn btn-outline-success ms-2"
-          onClick={() => {
-            onBtnClick(imageData, "png");
-          }}
-        >
-          View Image
-        </button>
+        <div className="row">
+          <div className="col-md-3">
+            <button
+              onClick={() => {
+                console.log(s1);
+              }}
+              className="mx-2 btn btn-primary"
+            >
+              Full chunk
+            </button>
+          </div>
+          <div className="col-md-3 mt-md-0 mt-3">
+            <button
+              className="btn btn-outline-success"
+              onClick={() => {
+                onBtnClick(pdfData, "pdf");
+              }}
+            >
+              View PDF
+            </button>
+          </div>
+          <div className="col-md-3 mt-md-0 mt-3">
+            <button
+              data-bs-toggle="modal"
+              data-bs-target="#exampleModal"
+              className="btn btn-outline-success ms-2"
+              onClick={() => {
+                onBtnClick(imageData, "png");
+              }}
+            >
+              View Image
+            </button>
+          </div>
+          <div className="col-md-3 mt-md-0 mt-3">
+            <button
+              className="btn btn-primary"
+              onClick={() => {
+                onDownloadBtnClick(pdfData, "pdf");
+              }}
+            >
+              Download PDF
+            </button>
+          </div>
+        </div>
 
         <div
           className="modal fade"
