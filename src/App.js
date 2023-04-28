@@ -85,6 +85,7 @@ const App = () => {
                     className="form-control"
                     id="current_page"
                     defaultValue="1"
+                    min={1}
                     type="number"
                   />
                 </span>
