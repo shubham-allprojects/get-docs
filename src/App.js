@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import * as pdfjsLib from "pdfjs-dist/webpack";
 
-
 const App = () => {
   const myState = {
     pdf: null,
@@ -85,11 +84,8 @@ const App = () => {
                   <input
                     className="form-control"
                     id="current_page"
-                    value="1"
+                    defaultValue="1"
                     type="number"
-                    onChange={() => {
-                      // console.log("");
-                    }}
                   />
                 </span>
                 <span>
