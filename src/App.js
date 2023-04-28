@@ -1,6 +1,55 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import pdfjsLib from "pdfjs-dist/build/pdf";
+// import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
 
 const App = () => {
+  const [myState, setMyState] = useState({
+    pdf: null,
+    currentPage: 1,
+    zoom: 1,
+  });
+
+  const { pdf, currentPage, zoom } = myState;
+
+  const render = () => {
+    pdf.getPage(currentPage).then((page) => {
+      var canvas = document.getElementById("pdf_renderer");
+      var ctx = canvas.getContext("2d");
+
+      var viewport = page.getViewport(zoom);
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+
+      page.render({
+        canvasContext: ctx,
+        viewport: viewport,
+      });
+    });
+  };
+
+  const onPrevBtnClick = (e) => {
+    if (pdf == null || currentPage == 1) return;
+    // myState.currentPage -= 1;
+    setMyState({ ...myState, currentPage: currentPage - 1 });
+    document.getElementById("current_page").value = currentPage - 1;
+    render();
+  };
+
+  const onNextBtnClick = (e) => {
+    if (pdf == null || currentPage > pdf._pdfInfo.numPages) return;
+    // myState.currentPage += 1;
+    setMyState({ ...myState, currentPage: currentPage + 1 });
+    document.getElementById("current_page").value = currentPage + 1;
+    render();
+  };
+
+  useEffect(() => {
+    pdfjsLib.getDocument("sample.pdf").then((pdf) => {
+      setMyState({ ...myState, pdf: pdf });
+      render();
+    });
+  }, []);
+
   return (
     <div className="container my-5">
       <div className="row justify-content-center">
@@ -20,7 +69,11 @@ const App = () => {
             >
               <div className="col-xl-12 d-flex">
                 <span>
-                  <button className="btn btn-warning" id="go_previous">
+                  <button
+                    onClick={onPrevBtnClick}
+                    className="btn btn-warning"
+                    id="go_previous"
+                  >
                     Previous
                   </button>
                 </span>
@@ -30,10 +83,17 @@ const App = () => {
                     id="current_page"
                     value="1"
                     type="number"
+                    onChange={() => {
+                      console.log("");
+                    }}
                   />
                 </span>
                 <span>
-                  <button className="btn btn-warning" id="go_next">
+                  <button
+                    onClick={onNextBtnClick}
+                    className="btn btn-warning"
+                    id="go_next"
+                  >
                     Next
                   </button>
                 </span>
