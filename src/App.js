@@ -105,7 +105,7 @@ function App() {
     <div className="App">
       <div className="container my-5">
         <div className="row">
-          <div className="col-md-3">
+          {/* <div className="col-md-3">
             <button
               onClick={() => {
                 console.log(s1);
@@ -113,6 +113,16 @@ function App() {
               className="mx-2 btn btn-primary"
             >
               Full chunk
+            </button>
+          </div> */}
+          <div className="col-md-3 mt-md-0 mt-3">
+            <button
+              className="btn btn-primary"
+              onClick={() => {
+                onDownloadBtnClick(imageData, "png");
+              }}
+            >
+              Download Image
             </button>
           </div>
           <div className="col-md-3 mt-md-0 mt-3">
