@@ -9,7 +9,7 @@ function App() {
   // const [fileExtension, setFileExtension] = useState();
   const getChunksOfDocuments = async () => {
     let dataToPost = {
-      document_id: 1,
+      document_id: 2,
       property_id: 1,
       chunk_number: cnt,
       chunk_size: 500,
@@ -18,27 +18,15 @@ function App() {
       .post(`/sam/v1/property/auth/property-docs`, dataToPost, {
         headers: {
           Authorization:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJlbWFpbCI6ImFkbWluQHNhbXRvb2wuY29tIiwiZXhwIjoxNjgyNjA2MzE1LCJyb2xlIjoiQWRtaW4sIiwidXNlcmlkIjoxfQ.82R4c3cgNDnFNVNPG_9sMv0uarjoHW1ST2qE1LsKPzw",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJlbWFpbCI6ImFkbWluQHNhbXRvb2wuY29tIiwiZXhwIjoxNjgzNjM1OTQyLCJyb2xlIjoiQWRtaW4sIiwidXNlcmlkIjoxfQ.aLhI2zZK6WgZuBRGJU1kWdDuc-Ory61STkdrlo5jvqs",
         },
       })
       .then((res) => {
-        let totalChunks;
         if (s1 !== res.data.data) {
           s1 += res.data.data;
-        }
-
-        //   if (cnt === 0) {
-        //     setFileName(res.data.file_name.split(".")[0]);
-        //     setFileExtension(res.data.file_name.split(".")[1]);
-        //   }
-
-        if (res.data.last_chunk !== true) {
-          totalChunks = Math.ceil(
-            res.data.total_file_size / res.data.chunk_size
-          );
-          console.log(totalChunks);
-          cnt += 1;
-          if (cnt <= totalChunks - 1) {
+          console.log(res.data, cnt);
+          if (res.data.last_chunk !== true) {
+            cnt += 1;
             getChunksOfDocuments();
           }
         }
@@ -105,7 +93,7 @@ function App() {
     <div className="App">
       <div className="container my-5">
         <div className="row">
-          {/* <div className="col-md-3">
+          <div className="col-md-3">
             <button
               onClick={() => {
                 console.log(s1);
@@ -114,7 +102,7 @@ function App() {
             >
               Full chunk
             </button>
-          </div> */}
+          </div>
           <div className="col-md-3 mt-md-0 mt-3">
             <button
               className="btn btn-primary"
