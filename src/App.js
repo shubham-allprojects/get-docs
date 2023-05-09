@@ -18,13 +18,13 @@ function App() {
       .post(`/sam/v1/property/auth/property-docs`, dataToPost, {
         headers: {
           Authorization:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJlbWFpbCI6ImFkbWluQHNhbXRvb2wuY29tIiwiZXhwIjoxNjgzNjM1OTQyLCJyb2xlIjoiQWRtaW4sIiwidXNlcmlkIjoxfQ.aLhI2zZK6WgZuBRGJU1kWdDuc-Ory61STkdrlo5jvqs",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJlbWFpbCI6ImFkbWluQHNhbXRvb2wuY29tIiwiZXhwIjoxNjgzNjQzMDA1LCJyb2xlIjoiQWRtaW4sIiwidXNlcmlkIjoxfQ.EcRMqsGp-qxT1li4oTAx08mdk85kRH5Ex1jbnokYzdY",
         },
       })
       .then((res) => {
         if (s1 !== res.data.data) {
           s1 += res.data.data;
-          console.log(res.data, cnt);
+          console.log(res.data.data);
           if (res.data.last_chunk !== true) {
             cnt += 1;
             getChunksOfDocuments();
