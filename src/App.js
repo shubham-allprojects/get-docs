@@ -26,14 +26,19 @@ function App() {
       .then((res) => {
         if (s1 !== res.data.data) {
           s1 += res.data.data;
-          console.log(res.data.data);
+          // console.log(res.data.data);
           combinedBinaryFormatOfChunks += window.atob(res.data.data);
           if (res.data.last_chunk !== true) {
             cnt += 1;
             getChunksOfDocuments();
           } else {
             setFileName(res.data.file_name);
-            setFileExtension(res.data.file_name.split(".")[1]);
+            let extension = res.data.file_name.split(".")[1];
+            setFileExtension(extension);
+            if (extension === "pdf") {
+              document.getElementById("btn").removeAttribute("data-bs-toggle");
+              document.getElementById("btn").removeAttribute("data-bs-target");
+            }
             setOriginalBase64(window.btoa(combinedBinaryFormatOfChunks));
           }
         }
@@ -57,6 +62,7 @@ function App() {
       fileExtension === "png"
     ) {
       // setTypeOfFile("image");
+      document.getElementById("exampleModal").classList.add("show");
       dataString = `data:image/${fileExtension};base64,`;
     }
     const base64Data = originalBase64;
@@ -64,7 +70,7 @@ function App() {
     const blob = await base64Response.blob();
     console.log(blob);
     setObjUrl(URL.createObjectURL(blob));
-    document.getElementById("exampleModal").classList.add("show");
+
     if (fileExtension === "pdf") {
       window.open(URL.createObjectURL(blob));
     }
@@ -118,6 +124,9 @@ function App() {
           </div>
           <div className="col-md-3 mt-md-0 mt-3">
             <button
+              id="btn"
+              data-bs-toggle="modal"
+              data-bs-target="#exampleModal"
               className="btn btn-outline-success"
               onClick={onViewButtonClick}
             >
@@ -127,8 +136,14 @@ function App() {
         </div>
 
         <div
-          className="modal fade show"
-          id="exampleModal"
+          className="modal fade"
+          id={`${
+            fileExtension === "jpg" ||
+            fileExtension === "jpeg" ||
+            fileExtension === "png"
+              ? "exampleModal"
+              : ""
+          }`}
           tabIndex="-1"
           aria-labelledby="exampleModalLabel"
           aria-hidden="true"
@@ -147,7 +162,9 @@ function App() {
                 <div className="container position-relative">
                   <div className="row justify-content-center">
                     <div className="col-12 px-0">
-                      {typeOfFile === "image" ? (
+                      {fileExtension === "jpg" ||
+                      fileExtension === "jpeg" ||
+                      fileExtension === "png" ? (
                         <img src={ObjUrl} alt="" className="h-100 w-100" />
                       ) : typeOfFile === "pdf" ? (
                         <>
