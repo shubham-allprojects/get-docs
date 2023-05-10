@@ -14,7 +14,7 @@ function App() {
       document_id: 2,
       property_id: 1,
       chunk_number: cnt,
-      chunk_size: 5000000,
+      chunk_size: 1024,
     };
     await axios
       .post(`/sam/v1/property/auth/property-docs`, dataToPost, {
