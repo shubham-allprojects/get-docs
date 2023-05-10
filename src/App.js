@@ -6,8 +6,9 @@ let cnt = 0;
 function App() {
   let s1 = "";
   let combinedBinaryFormatOfChunks = "";
-  // const [fileName, setFileName] = useState();
-  // const [fileExtension, setFileExtension] = useState();
+  const [fileName, setFileName] = useState();
+  const [fileExtension, setFileExtension] = useState();
+  const [originalBase64, setOriginalBase64] = useState();
   const getChunksOfDocuments = async () => {
     let dataToPost = {
       document_id: 2,
@@ -25,11 +26,15 @@ function App() {
       .then((res) => {
         if (s1 !== res.data.data) {
           s1 += res.data.data;
-          console.log(res.data.data);
+          // console.log(res.data.data);
           combinedBinaryFormatOfChunks += window.atob(res.data.data);
           if (res.data.last_chunk !== true) {
             cnt += 1;
             getChunksOfDocuments();
+          } else {
+            setFileName(res.data.file_name);
+            setFileExtension(res.data.file_name.split(".")[1]);
+            setOriginalBase64(window.btoa(combinedBinaryFormatOfChunks));
           }
         }
       });
@@ -98,7 +103,7 @@ function App() {
           <div className="col-md-3">
             <button
               onClick={() => {
-                console.log(window.btoa(combinedBinaryFormatOfChunks));
+                console.log(originalBase64, fileName, fileExtension);
               }}
               className="mx-2 btn btn-primary"
             >
