@@ -1,7 +1,7 @@
 import "./App.css";
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { pdfData, imageData } from "./Data";
+
 let cnt = 0;
 function App() {
   let s1 = "";
