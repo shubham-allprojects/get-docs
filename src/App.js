@@ -14,7 +14,7 @@ function App() {
       document_id: 2,
       property_id: 1,
       chunk_number: cnt,
-      chunk_size: 500,
+      chunk_size: 5000000,
     };
     await axios
       .post(`/sam/v1/property/auth/property-docs`, dataToPost, {
@@ -26,7 +26,7 @@ function App() {
       .then((res) => {
         if (s1 !== res.data.data) {
           s1 += res.data.data;
-          // console.log(res.data.data);
+          console.log(res.data.data);
           combinedBinaryFormatOfChunks += window.atob(res.data.data);
           if (res.data.last_chunk !== true) {
             cnt += 1;
@@ -46,30 +46,31 @@ function App() {
 
   const [ObjUrl, setObjUrl] = useState("");
   const [typeOfFile, setTypeOfFile] = useState("");
-  const onBtnClick = async (base64DataFromDB, fileExtension) => {
+  const onViewButtonClick = async () => {
     let dataString = "";
     if (fileExtension === "pdf") {
-      setTypeOfFile("pdf");
+      // setTypeOfFile("pdf");
       dataString = "data:application/pdf;base64,";
     } else if (
       fileExtension === "jpg" ||
       fileExtension === "jpeg" ||
       fileExtension === "png"
     ) {
-      setTypeOfFile("image");
+      // setTypeOfFile("image");
       dataString = `data:image/${fileExtension};base64,`;
     }
-    const base64Data = base64DataFromDB;
+    const base64Data = originalBase64;
     const base64Response = await fetch(`${dataString}${base64Data}`);
     const blob = await base64Response.blob();
     console.log(blob);
     setObjUrl(URL.createObjectURL(blob));
+    document.getElementById("exampleModal").classList.add("show");
     if (fileExtension === "pdf") {
       window.open(URL.createObjectURL(blob));
     }
   };
 
-  const onDownloadBtnClick = async (base64DataFromDB, fileExtension) => {
+  const onDownloadBtnClick = async () => {
     let dataString = "";
     if (fileExtension === "pdf") {
       setTypeOfFile("pdf");
@@ -82,14 +83,14 @@ function App() {
       setTypeOfFile("image");
       dataString = `data:image/${fileExtension};base64,`;
     }
-    const base64Data = base64DataFromDB;
+    const base64Data = originalBase64;
     const base64Response = await fetch(`${dataString}${base64Data}`);
     const blob = await base64Response.blob();
     let href = URL.createObjectURL(blob);
     const a = Object.assign(document.createElement("a"), {
       href,
       style: "display:none",
-      download: `sample.${fileExtension}`,
+      download: `${fileName.split(".")[0]}.${fileExtension}`,
     });
     document.body.appendChild(a);
     a.click();
@@ -111,51 +112,22 @@ function App() {
             </button>
           </div>
           <div className="col-md-3 mt-md-0 mt-3">
-            <button
-              className="btn btn-primary"
-              onClick={() => {
-                onDownloadBtnClick(imageData, "png");
-              }}
-            >
-              Download Image
+            <button className="btn btn-primary" onClick={onDownloadBtnClick}>
+              Download File
             </button>
           </div>
           <div className="col-md-3 mt-md-0 mt-3">
             <button
               className="btn btn-outline-success"
-              onClick={() => {
-                onBtnClick(pdfData, "pdf");
-              }}
+              onClick={onViewButtonClick}
             >
-              View PDF
-            </button>
-          </div>
-          <div className="col-md-3 mt-md-0 mt-3">
-            <button
-              data-bs-toggle="modal"
-              data-bs-target="#exampleModal"
-              className="btn btn-outline-success ms-2"
-              onClick={() => {
-                onBtnClick(imageData, "png");
-              }}
-            >
-              View Image
-            </button>
-          </div>
-          <div className="col-md-3 mt-md-0 mt-3">
-            <button
-              className="btn btn-primary"
-              onClick={() => {
-                onDownloadBtnClick(pdfData, "pdf");
-              }}
-            >
-              Download PDF
+              View File
             </button>
           </div>
         </div>
 
         <div
-          className="modal fade"
+          className="modal fade show"
           id="exampleModal"
           tabIndex="-1"
           aria-labelledby="exampleModalLabel"
