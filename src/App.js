@@ -20,7 +20,7 @@ function App() {
       .post(`/sam/v1/property/auth/property-docs`, dataToPost, {
         headers: {
           Authorization:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJlbWFpbCI6ImFkbWluQHNhbXRvb2wuY29tIiwiZXhwIjoxNjg0Mjk3MjQ3LCJyb2xlIjoiQWRtaW4sIiwidXNlcmlkIjoxfQ.u7jTlWNV-V2HJmGZZH3u2u8K73PEpWPbRuZRJ_RPU-c",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJlbWFpbCI6ImFkbWluQHNhbXRvb2wuY29tIiwiZXhwIjoxNjg0MzE2NTI4LCJyb2xlIjoiQWRtaW4sIiwidXNlcmlkIjoxfQ.vSt_mLHonzbtv3oZC5yjPl2NqoIfqX0OwZvOmMg71B8",
         },
       })
       .then((res) => {
