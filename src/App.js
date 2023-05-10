@@ -5,6 +5,7 @@ import { pdfData, imageData } from "./Data";
 let cnt = 0;
 function App() {
   let s1 = "";
+  let combinedBinaryFormatOfChunks = "";
   // const [fileName, setFileName] = useState();
   // const [fileExtension, setFileExtension] = useState();
   const getChunksOfDocuments = async () => {
@@ -18,13 +19,14 @@ function App() {
       .post(`/sam/v1/property/auth/property-docs`, dataToPost, {
         headers: {
           Authorization:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJlbWFpbCI6ImFkbWluQHNhbXRvb2wuY29tIiwiZXhwIjoxNjgzNjQzMDA1LCJyb2xlIjoiQWRtaW4sIiwidXNlcmlkIjoxfQ.EcRMqsGp-qxT1li4oTAx08mdk85kRH5Ex1jbnokYzdY",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJlbWFpbCI6ImFkbWluQHNhbXRvb2wuY29tIiwiZXhwIjoxNjg0Mjk3MjQ3LCJyb2xlIjoiQWRtaW4sIiwidXNlcmlkIjoxfQ.u7jTlWNV-V2HJmGZZH3u2u8K73PEpWPbRuZRJ_RPU-c",
         },
       })
       .then((res) => {
         if (s1 !== res.data.data) {
           s1 += res.data.data;
           console.log(res.data.data);
+          combinedBinaryFormatOfChunks += window.atob(res.data.data);
           if (res.data.last_chunk !== true) {
             cnt += 1;
             getChunksOfDocuments();
@@ -96,7 +98,7 @@ function App() {
           <div className="col-md-3">
             <button
               onClick={() => {
-                console.log(s1);
+                console.log(window.btoa(combinedBinaryFormatOfChunks));
               }}
               className="mx-2 btn btn-primary"
             >
