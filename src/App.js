@@ -11,16 +11,16 @@ function App() {
   const [originalBase64, setOriginalBase64] = useState();
   const getChunksOfDocuments = async () => {
     let dataToPost = {
-      document_id: 2,
-      property_id: 1,
+      document_id: 1,
+      property_id: 2,
       chunk_number: cnt,
-      chunk_size: 1024,
+      chunk_size: 2000000,
     };
     await axios
       .post(`/sam/v1/property/auth/property-docs`, dataToPost, {
         headers: {
           Authorization:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJlbWFpbCI6ImFkbWluQHNhbXRvb2wuY29tIiwiZXhwIjoxNjg0MzE2NTI4LCJyb2xlIjoiQWRtaW4sIiwidXNlcmlkIjoxfQ.vSt_mLHonzbtv3oZC5yjPl2NqoIfqX0OwZvOmMg71B8",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJlbWFpbCI6ImFkbWluQHNhbXRvb2wuY29tIiwiZXhwIjoxNjg0MzA4NjE5LCJpc3N1ZWRUaW1lIjoiMjAyMy0wNS0xN1QwNzowMDoxOS42ODA2OTkxMDVaIiwicm9sZSI6IkFkbWluLCIsInVzZXJpZCI6MX0.11ihDT009K6ERNtT8PpJjJM5aL2jHlTaBgfBMMaPveQ",
         },
       })
       .then((res) => {
@@ -33,8 +33,10 @@ function App() {
             getChunksOfDocuments();
           } else {
             setFileName(res.data.file_name);
+            console.log(res.data);
             let extension = res.data.file_name.split(".")[1];
             setFileExtension(extension);
+            console.log(extension);
             if (extension === "pdf") {
               document.getElementById("btn").removeAttribute("data-bs-toggle");
               document.getElementById("btn").removeAttribute("data-bs-target");
