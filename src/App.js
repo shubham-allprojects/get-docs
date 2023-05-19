@@ -1,18 +1,16 @@
 import "./App.css";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 let cnt = 0;
 function App() {
   let s1 = "";
   let combinedBinaryFormatOfChunks = "";
   const [fileName, setFileName] = useState();
-  const [fileExtension, setFileExtension] = useState();
-  const [originalBase64, setOriginalBase64] = useState();
-  const getChunksOfDocuments = async () => {
+  const getChunksOfDocuments = async (documentId, propertyId) => {
     let dataToPost = {
-      document_id: 1,
-      property_id: 2,
+      document_id: documentId,
+      property_id: propertyId,
       chunk_number: cnt,
       chunk_size: 2000000,
     };
@@ -20,10 +18,10 @@ function App() {
       .post(`/sam/v1/property/auth/property-docs`, dataToPost, {
         headers: {
           Authorization:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJlbWFpbCI6ImFkbWluQHNhbXRvb2wuY29tIiwiZXhwIjoxNjg0MzA4NjE5LCJpc3N1ZWRUaW1lIjoiMjAyMy0wNS0xN1QwNzowMDoxOS42ODA2OTkxMDVaIiwicm9sZSI6IkFkbWluLCIsInVzZXJpZCI6MX0.11ihDT009K6ERNtT8PpJjJM5aL2jHlTaBgfBMMaPveQ",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJlbWFpbCI6ImFkbWluQHNhbXRvb2wuY29tIiwiZXhwIjoxNjg1MTAwMjc5LCJpc3N1ZWRUaW1lIjoiMjAyMy0wNS0xOVQxMjo0NDozOS43MTgxMjU3NzRaIiwicm9sZSI6IkFkbWluLCIsInVzZXJpZCI6MX0.aSmwR_af6mH-1_hLO6TzcM1Dy0736i17YPt27hwLNTQ",
         },
       })
-      .then((res) => {
+      .then(async (res) => {
         if (s1 !== res.data.data) {
           s1 += res.data.data;
           // console.log(res.data.data);
@@ -32,112 +30,81 @@ function App() {
             cnt += 1;
             getChunksOfDocuments();
           } else {
+            let dataString = "";
             setFileName(res.data.file_name);
-            console.log(res.data);
-            let extension = res.data.file_name.split(".")[1];
-            setFileExtension(extension);
-            console.log(extension);
-            if (extension === "pdf") {
-              document.getElementById("btn").removeAttribute("data-bs-toggle");
-              document.getElementById("btn").removeAttribute("data-bs-target");
+            let fileExtension = res.data.file_name.split(".")[1];
+            if (fileExtension === "pdf") {
+              // setTypeOfFile("pdf");
+              dataString = "data:application/pdf;base64,";
+            } else if (
+              fileExtension === "jpg" ||
+              fileExtension === "jpeg" ||
+              fileExtension === "png"
+            ) {
+              // setTypeOfFile("image");
+              // document.getElementById("exampleModal").classList.add("show");
+              dataString = `data:image/${fileExtension};base64,`;
             }
-            setOriginalBase64(window.btoa(combinedBinaryFormatOfChunks));
+            let originalBase64 = window.btoa(combinedBinaryFormatOfChunks);
+            const base64Data = originalBase64;
+            const base64Response = await fetch(`${dataString}${base64Data}`);
+            const blob = await base64Response.blob();
+            window.open(URL.createObjectURL(blob));
           }
         }
       });
   };
-  useEffect(() => {
-    getChunksOfDocuments();
-    // eslint-disable-next-line
-  }, []);
 
   const [ObjUrl, setObjUrl] = useState("");
   const [typeOfFile, setTypeOfFile] = useState("");
-  const onViewButtonClick = async () => {
-    let dataString = "";
-    if (fileExtension === "pdf") {
-      // setTypeOfFile("pdf");
-      dataString = "data:application/pdf;base64,";
-    } else if (
-      fileExtension === "jpg" ||
-      fileExtension === "jpeg" ||
-      fileExtension === "png"
-    ) {
-      // setTypeOfFile("image");
-      document.getElementById("exampleModal").classList.add("show");
-      dataString = `data:image/${fileExtension};base64,`;
-    }
-    const base64Data = originalBase64;
-    const base64Response = await fetch(`${dataString}${base64Data}`);
-    const blob = await base64Response.blob();
-    console.log(blob);
-    setObjUrl(URL.createObjectURL(blob));
 
-    if (fileExtension === "pdf") {
-      window.open(URL.createObjectURL(blob));
-    }
-  };
-
-  const onDownloadBtnClick = async () => {
-    let dataString = "";
-    if (fileExtension === "pdf") {
-      setTypeOfFile("pdf");
-      dataString = "data:application/pdf;base64,";
-    } else if (
-      fileExtension === "jpg" ||
-      fileExtension === "jpeg" ||
-      fileExtension === "png"
-    ) {
-      setTypeOfFile("image");
-      dataString = `data:image/${fileExtension};base64,`;
-    }
-    const base64Data = originalBase64;
-    const base64Response = await fetch(`${dataString}${base64Data}`);
-    const blob = await base64Response.blob();
-    let href = URL.createObjectURL(blob);
-    const a = Object.assign(document.createElement("a"), {
-      href,
-      style: "display:none",
-      download: `${fileName.split(".")[0]}.${fileExtension}`,
-    });
-    document.body.appendChild(a);
-    a.click();
-    URL.revokeObjectURL(href);
-    a.remove();
-  };
+  // const onDownloadBtnClick = async () => {
+  //   let dataString = "";
+  //   if (fileExtension === "pdf") {
+  //     setTypeOfFile("pdf");
+  //     dataString = "data:application/pdf;base64,";
+  //   } else if (
+  //     fileExtension === "jpg" ||
+  //     fileExtension === "jpeg" ||
+  //     fileExtension === "png"
+  //   ) {
+  //     setTypeOfFile("image");
+  //     dataString = `data:image/${fileExtension};base64,`;
+  //   }
+  //   const base64Data = originalBase64;
+  //   const base64Response = await fetch(`${dataString}${base64Data}`);
+  //   const blob = await base64Response.blob();
+  //   let href = URL.createObjectURL(blob);
+  //   const a = Object.assign(document.createElement("a"), {
+  //     href,
+  //     style: "display:none",
+  //     download: `${fileName.split(".")[0]}.${fileExtension}`,
+  //   });
+  //   document.body.appendChild(a);
+  //   a.click();
+  //   URL.revokeObjectURL(href);
+  //   a.remove();
+  // };
   return (
     <div className="App">
       <div className="container my-5">
         <div className="row">
-          <div className="col-md-3">
-            <button
-              onClick={() => {
-                console.log(originalBase64, fileName, fileExtension);
-              }}
-              className="mx-2 btn btn-primary"
-            >
-              Full chunk
-            </button>
-          </div>
-          <div className="col-md-3 mt-md-0 mt-3">
-            <button className="btn btn-primary" onClick={onDownloadBtnClick}>
-              Download File
-            </button>
-          </div>
           <div className="col-md-3 mt-md-0 mt-3">
             <button
               id="btn"
-              data-bs-toggle="modal"
-              data-bs-target="#exampleModal"
+              // data-bs-toggle="modal"
+              // data-bs-target="#exampleModal"
               className="btn btn-outline-success"
-              onClick={onViewButtonClick}
+              onClick={() => {
+                getChunksOfDocuments(4, 17);
+              }}
             >
               View File
             </button>
           </div>
         </div>
 
-        <div
+        {/* <div
           className="modal fade"
           id={`${
             fileExtension === "jpg" ||
@@ -188,7 +155,7 @@ function App() {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
       <br />
     </div>
